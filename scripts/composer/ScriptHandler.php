@@ -42,10 +42,11 @@ class ScriptHandler {
       require_once $drupalRoot . '/core/includes/install.inc';
       $settings['config_directories'] = [
         CONFIG_SYNC_DIRECTORY => (object) [
-          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config/sync', $drupalRoot),
+          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config/default/sync', $drupalRoot),
           'required' => TRUE,
         ],
       ];
+      
       drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
       $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
       $event->getIO()->write("Create a sites/default/settings.php file with chmod 0666");

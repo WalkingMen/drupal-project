@@ -89,12 +89,26 @@ Follow the steps below to update your core files.
 
 1. edit the .lando.yml file and replace all instances of "drupal-project" by the name of the project
 1. type `lando start` to launch the local dev environment.
-
+1. edit settings.php and add the database info (or use the drupal installer)
+```php
+if(getenv('LANDO')){
+  $databases['default']['default'] = array (
+    'database' => getenv('DB_NAME'),
+    'username' => getenv('DB_USER'),
+    'password' => getenv('DB_PASSWORD'),
+    'prefix' => '',
+    'host' => getenv('DB_HOST'),
+    'port' => getenv('DB_PORT'),
+    'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+    'driver' => 'mysql',
+  );
+}
+```
 ### Set up sync with acquia
 
 1. download the drush aliases files from your acquia cloud account under credentials
 1. extract them in your $HOME directory
-1. Copy the alias file (projectname.aliases.drushrc.inc) for this website and copy it to `$PROJECT_ROOT/drush'
+1. Copy the alias file (projectname.aliases.drushrc.inc) for this website and copy it to `$PROJECT_ROOT/drush/site-aliases/'
 1. if you have already launched lando, perform an `lando rebuild`
 
 ### Sync database from acquia dev
