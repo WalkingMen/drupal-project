@@ -21,17 +21,17 @@ After that you can create the project:
 composer create-project WalkingMen/drupal-project:8.x-dev some-dir --stability dev --no-interaction
 ```
 
-With `composer require ...` you can download new dependencies to your 
-installation.
-
-```
-cd some-dir
-composer require drupal/devel:~1.0
-```
-
 The `composer create-project` command passes ownership of all files to the 
 project that is created. You should create a new git repository, and commit 
 all files not excluded by the .gitignore file.
+
+## Alternative usage (without installing composer)
+
+First you need to [install Lando](https://docs.devwithlando.io/installation/installing.html)
+
+1. Download the project as a zip file
+1. Extract to folder of your choosing
+1. Setup Lando (see below) and it will install all composer dependencies.
 
 ## What does the template do?
 
@@ -49,6 +49,17 @@ When installing the given `composer.json` some tasks are taken care of:
 * Latest version of DrupalConsole is installed locally for use at `vendor/bin/drupal`.
 
 ## FAQ
+
+### adding a new module or dependency
+
+
+With `composer require ...` you can download new dependencies to your 
+installation.
+
+```
+cd some-dir
+composer require drupal/devel:~1.0
+```
 
 ### Updating Drupal Core
 
@@ -79,14 +90,14 @@ Follow the steps below to update your core files.
 1. edit the .lando.yml file and replace all instances of "drupal-project" by the name of the project
 1. type `lando start` to launch the local dev environment.
 
-### set up sync with acquia
+### Set up sync with acquia
 
 1. download the drush aliases files from your acquia cloud account under credentials
 1. extract them in your $HOME directory
 1. Copy the alias file (projectname.aliases.drushrc.inc) for this website and copy it to `$PROJECT_ROOT/drush'
 1. if you have already launched lando, perform an `lando rebuild`
 
-### sync database from acquia dev
+### Sync database from acquia dev
 
 1. navigate to the `docroot` folder
 1. run `drush sql-sync @projectname.dev default` (for the default website)
