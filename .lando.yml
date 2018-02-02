@@ -46,7 +46,6 @@ services:
     type: mailhog
     hogfrom:
       - appserver
-    portforward: 1026
 
   cli:
     type: node:8
