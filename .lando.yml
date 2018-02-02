@@ -1,0 +1,81 @@
+name: drupal-project
+recipe: drupal8
+
+config:
+  # use php version 7.1 like on acquia
+  php: '7.1'
+  # use apache as the webserver
+  via: apache
+  # path to the webroot
+  webroot: docroot
+  # activate xdebug
+  xdebug: true
+
+events:
+  # Clear caches after a database import
+  post-db-import:
+    - appserver: cd $LANDO_WEBROOT && drush cr -y
+
+  # Runs composer install and a custom php script after your app starts
+  post-start:
+    - appserver: cd $LANDO_MOUNT && composer install
+
+proxy:
+  mailhog:
+    - mail.drupal-project.lndo.site
+
+services:
+  appserver:
+    build:
+      # Add all remote aliases from acquia
+      - "mkdir -p ~/.drush/site-aliases"
+      - "ln -sf /app/drush/site-aliases/drupal-project.aliases.drushrc.php ~/.drush/site-aliases/drupal-project.drushrc.php"
+      - "ln -sf /app/drush/policy.drush.inc ~/.drush/policy.drush.inc"
+      # Copy pem file needed for acquia aliases (this should not be in the repo for security reasons)
+      - "ln -sf /user/.drush/cloudapi.acquia.com.pem ~/.drush/cloudapi.acquia.com.pem"
+      # Add acquia drush commands
+      - "ln -sf /user/.drush/acapi.drush.inc ~/.drush/acapi.drush.inc"
+      # Map acquia drush cloudapi login credentials  (this should not be in the repo for security reasons)
+      - "mkdir -p ~/.acquia/"
+      - "ln -sf /user/.acquia/cloudapi.conf ~/.acquia/cloudapi.conf"
+      # add SSH files from the host to access acquia via ssh (this should not be in the repo for security reasons)
+      - "mkdir -p ~/.ssh/"
+      - "ln -sf /user/.ssh/id_rsa ~/.ssh/id_rsa"
+  
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+    portforward: 1026
+
+  cli:
+    type: node:8
+    globals:
+      gulp-cli: "latest"
+      grunt-cli: "latest"
+    extras:
+      - apt-get update -y
+      - apt-get install ruby-full -y
+      - gem update --system
+      - gem install bundler
+      - gem install compass
+
+tooling:
+  node:
+    service: cli
+  npm:
+    service: cli
+  grunt:
+    service: cli
+  gulp:
+    service: cli
+  gem:
+    service: cli
+  ruby:
+    service: cli
+  bundler:
+    service: cli
+  sass:
+    service: cli
+  compass:
+    service: cli
