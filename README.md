@@ -1,7 +1,5 @@
 # Composer template for Drupal projects
 
-[![Build Status](https://travis-ci.org/drupal-composer/drupal-project.svg?branch=8.x)](https://travis-ci.org/drupal-composer/drupal-project)
-
 This project template should provide a kickstart for managing your site
 dependencies with [Composer](https://getcomposer.org/).
 
@@ -20,7 +18,7 @@ for your setup.
 After that you can create the project:
 
 ```
-composer create-project drupal-composer/drupal-project:8.x-dev some-dir --stability dev --no-interaction
+composer create-project WalkingMen/drupal-project:8.x-dev some-dir --stability dev --no-interaction
 ```
 
 With `composer require ...` you can download new dependencies to your 
@@ -39,18 +37,20 @@ all files not excluded by the .gitignore file.
 
 When installing the given `composer.json` some tasks are taken care of:
 
-* Drupal will be installed in the `web`-directory.
+* Drupal will be installed in the `docroot`-directory.
 * Autoloader is implemented to use the generated composer autoloader in `vendor/autoload.php`,
-  instead of the one provided by Drupal (`web/vendor/autoload.php`).
-* Modules (packages of type `drupal-module`) will be placed in `web/modules/contrib/`
-* Theme (packages of type `drupal-theme`) will be placed in `web/themes/contrib/`
-* Profiles (packages of type `drupal-profile`) will be placed in `web/profiles/contrib/`
+  instead of the one provided by Drupal (`docroor/vendor/autoload.php`).
+* Modules (packages of type `drupal-module`) will be placed in `docroot/modules/contrib/`
+* Theme (packages of type `drupal-theme`) will be placed in `docroot/themes/contrib/`
+* Profiles (packages of type `drupal-profile`) will be placed in `docroot/profiles/contrib/`
 * Creates default writable versions of `settings.php` and `services.yml`.
-* Creates `web/sites/default/files`-directory.
+* Creates `docroot/sites/default/files`-directory.
 * Latest version of drush is installed locally for use at `vendor/bin/drush`.
 * Latest version of DrupalConsole is installed locally for use at `vendor/bin/drupal`.
 
-## Updating Drupal Core
+## FAQ
+
+### Updating Drupal Core
 
 This project will attempt to keep all of your Drupal Core files up-to-date; the 
 project [drupal-composer/drupal-scaffold](https://github.com/drupal-composer/drupal-scaffold) 
@@ -74,41 +74,23 @@ Follow the steps below to update your core files.
    keeping all of your modifications at the beginning or end of the file is a 
    good strategy to keep merges easy.
 
-## Generate composer.json from existing project
+### Local development using [Lando](https://docs.devwithlando.io/)
 
-With using [the "Composer Generate" drush extension](https://www.drupal.org/project/composer_generate)
-you can now generate a basic `composer.json` file from an existing project. Note
-that the generated `composer.json` might differ from this project's file.
+1. edit the .lando.yml file and replace all instances of "drupal-project" by the name of the project
+1. type `lando start` to launch the local dev environment.
 
+### set up sync with acquia
 
-## FAQ
+1. download the drush aliases files from your acquia cloud account under credentials
+1. extract them in your $HOME directory
+1. Copy the alias file (projectname.aliases.drushrc.inc) for this website and copy it to `$PROJECT_ROOT/drush'
+1. if you have already launched lando, perform an `lando rebuild`
 
-### Should I commit the contrib modules I download?
+### sync database from acquia dev
 
-Composer recommends **no**. They provide [argumentation against but also 
-workrounds if a project decides to do it anyway](https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md).
+1. navigate to the `docroot` folder
+1. run `drush sql-sync @projectname.dev default` (for the default website)
 
-### Should I commit the scaffolding files?
-
-The [drupal-scaffold](https://github.com/drupal-composer/drupal-scaffold) plugin can download the scaffold files (like
-index.php, update.php, …) to the web/ directory of your project. If you have not customized those files you could choose
-to not check them into your version control system (e.g. git). If that is the case for your project it might be
-convenient to automatically run the drupal-scaffold plugin after every install or update of your project. You can
-achieve that by registering `@drupal-scaffold` as post-install and post-update command in your composer.json:
-
-```json
-"scripts": {
-    "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
-    "post-install-cmd": [
-        "@drupal-scaffold",
-        "..."
-    ],
-    "post-update-cmd": [
-        "@drupal-scaffold",
-        "..."
-    ]
-},
-```
 ### How can I apply patches to downloaded modules?
 
 If you need to apply patches (depending on the project being modified, a pull 
@@ -126,6 +108,3 @@ section of composer.json:
     }
 }
 ```
-### How do I switch from packagist.drupal-composer.org to packages.drupal.org?
-
-Follow the instructions in the [documentation on drupal.org](https://www.drupal.org/docs/develop/using-composer/using-packagesdrupalorg).
